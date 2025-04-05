@@ -29,5 +29,18 @@ namespace TranThienTrung2122110179.Model
 
         [NotMapped] // Không lưu vào database
         public decimal TotalPrice { get; set; } // Tổng tiền (sẽ tính toán khi lấy dữ liệu)
+                                                // Thông tin tạo
+        [MaxLength(255)]
+        public string CreatedBy { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Thông tin cập nhật
+        [MaxLength(255)]
+        public string UpdatedBy { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+
     }
 }

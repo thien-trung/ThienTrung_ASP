@@ -2,19 +2,27 @@
 
 namespace TranThienTrung2122110179.Model
 {
-   public class Category
+    public class Category
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string Name { get; set; } // Tên danh mục
+        public string Name { get; set; }
 
         [MaxLength(1000)]
-        public string Description { get; set; } // Mô tả danh mục
+        public string Description { get; set; }
 
-        public ICollection<Product> Products { get; set; } // Danh sách sản phẩm thuộc danh mục
+        // KHÔNG CẦN REQUIRED
+        public ICollection<Product>? Products { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedAt { get; set; }
+
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
+
     }
-
 }

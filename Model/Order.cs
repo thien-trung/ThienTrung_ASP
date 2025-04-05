@@ -5,7 +5,6 @@ namespace TranThienTrung2122110179.Model
 {
     public class Order
     {
-
         [Key]
         public int Id { get; set; }
 
@@ -30,6 +29,19 @@ namespace TranThienTrung2122110179.Model
         public string ShippingAddress { get; set; } // Địa chỉ giao hàng
 
         public ICollection<OrderDetail> OrderDetails { get; set; } // Danh sách sản phẩm trong đơn hàng
+
+        // Thông tin tạo
+        [MaxLength(255)]
+        public string CreatedBy { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Thông tin cập nhật
+        [MaxLength(255)]
+        public string UpdatedBy { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+
     }
 }
-

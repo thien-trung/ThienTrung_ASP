@@ -17,7 +17,7 @@ namespace TranThienTrung2122110179.Model
         public decimal Price { get; set; } // Giá sản phẩm
 
         [Required]
-        public int Stock { get; set; } // Số lượng tồn kho
+        public int Stock { get; set; } // Số lượng tồn kho  
 
         [MaxLength(1000)]
         public string Description { get; set; } // Mô tả sản phẩm
@@ -38,6 +38,18 @@ namespace TranThienTrung2122110179.Model
         [Required]
         public bool IsActive { get; set; } = true; // Trạng thái hoạt động
 
+        // Thông tin tạo
+        [MaxLength(255)]
+        public string CreatedBy { get; set; } // Người tạo
+
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Ngày tạo sản phẩm
+
+        // Thông tin cập nhật
+        [MaxLength(255)]
+        public string UpdatedBy { get; set; } // Người cập nhật
+
+        public DateTime? UpdatedAt { get; set; } // Ngày cập nhật (nullable)
+
+
     }
 }

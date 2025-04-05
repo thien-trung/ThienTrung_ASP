@@ -29,6 +29,19 @@ namespace TranThienTrung2122110179.Model
         [Required]
         public bool IsAdmin { get; set; } = false; // Phân quyền (Admin hoặc User)
 
+        // Thông tin tạo
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Ngày tạo tài khoản
+
+        [MaxLength(255)]
+        public string CreatedBy { get; set; }
+
+
+        // Thông tin cập nhật
+        [MaxLength(255)]
+        public string UpdatedBy { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+
     }
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TranThienTrung2122110179")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7719abafeab565a24707144e36ddbec1330b74c5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a74b8689df60319b5248aac162b587db28b8b2c")]
 [assembly: System.Reflection.AssemblyProductAttribute("TranThienTrung2122110179")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TranThienTrung2122110179")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

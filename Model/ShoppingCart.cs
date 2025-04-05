@@ -26,6 +26,18 @@ namespace TranThienTrung2122110179.Model
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalPrice { get; set; }
+        // Thông tin tạo
+        [MaxLength(255)]
+        public string CreatedBy { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Thông tin cập nhật
+        [MaxLength(255)]
+        public string UpdatedBy { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
     }
 }
 
