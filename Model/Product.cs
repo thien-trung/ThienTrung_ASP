@@ -29,7 +29,7 @@ namespace TranThienTrung2122110179.Model
         public int CategoryId { get; set; } // Khóa ngoại liên kết với bảng Category
 
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        //public Category Category { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -44,11 +44,7 @@ namespace TranThienTrung2122110179.Model
 
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Ngày tạo sản phẩm
 
-        // Thông tin cập nhật
-        [MaxLength(255)]
-        public string UpdatedBy { get; set; } // Người cập nhật
 
-        public DateTime? UpdatedAt { get; set; } // Ngày cập nhật (nullable)
 
 
     }

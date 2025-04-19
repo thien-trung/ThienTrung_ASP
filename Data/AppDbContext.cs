@@ -18,7 +18,11 @@ namespace TranThienTrung2122110179.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
 
-
+        public DbSet<Stock> Stocks { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Deal> Deals { get; set; }
+        public DbSet<Post> Posts { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

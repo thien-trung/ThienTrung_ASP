@@ -1,35 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TranThienTrung2122110179.Model
 {
     public class OrderDetail
     {
-        [Key]
         public int Id { get; set; }
-
-        [Required]
         public int OrderId { get; set; }
-
-        [ForeignKey("OrderId")]
-        public Order Order { get; set; }
-
-        [Required]
         public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; } // Có thể tính tự động từ Quantity * UnitPrice
 
-        [ForeignKey("ProductId")]
-        public Product Product { get; set; }
-
-        [Required]
-        public int Quantity { get; set; } // Số lượng sản phẩm
-
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal UnitPrice { get; set; } // Giá từng sản phẩm
-
-        [NotMapped] // Không lưu vào database
-        public decimal TotalPrice { get; set; } // Tổng tiền (sẽ tính toán khi lấy dữ liệu)
-                                                // Thông tin tạo
         [MaxLength(255)]
         public string CreatedBy { get; set; }
 
@@ -40,7 +22,5 @@ namespace TranThienTrung2122110179.Model
         public string UpdatedBy { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
-
-
     }
 }

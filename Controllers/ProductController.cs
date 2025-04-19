@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TranThienTrung2122110179.Data;
+using TranThienTrung2122110179.DTO;
 using TranThienTrung2122110179.Model;
 
 namespace TranThienTrung2122110179.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
+
     public class ProductController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -16,29 +21,63 @@ namespace TranThienTrung2122110179.Controllers
             _context = context;
         }
 
+        // Chuyển đổi từ Product sang ProductDTO
+        private ProductDTO ConvertToDTO(Product product)
+        {
+            return new ProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                Description = product.Description,
+                ImageUrl = product.ImageUrl,
+                CategoryId = product.CategoryId,
+                Brand = product.Brand,
+                IsActive = product.IsActive
+            };
+        }
+
         // Thêm sản phẩm mới
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct(Product product)
+        public async Task<ActionResult<ProductDTO>> CreateProduct(ProductDTO productDto)
         {
             // Kiểm tra nếu sản phẩm đã tồn tại
-            if (_context.Products.Any(p => p.Name == product.Name))
+            if (_context.Products.Any(p => p.Name == productDto.Name))
             {
                 return Conflict("Sản phẩm đã tồn tại.");
             }
+
+            // Chuyển từ DTO sang Entity Product
+            var product = new Product
+            {
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Stock = productDto.Stock,
+                Description = productDto.Description,
+                ImageUrl = productDto.ImageUrl,
+                CategoryId = productDto.CategoryId,
+                Brand = productDto.Brand,
+                IsActive = productDto.IsActive,
+                CreatedAt = DateTime.Now,
+                CreatedBy = productDto.CreatedBy
+            };
 
             // Thêm sản phẩm vào database
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            // Trả về thông tin sản phẩm với CategoryId mà không cần lấy dữ liệu Category
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            // Chuyển đổi Entity sang DTO và trả về
+            var createdProductDto = ConvertToDTO(product);
+
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, createdProductDto);
         }
 
         // Sửa sản phẩm
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, Product product)
+        public async Task<IActionResult> UpdateProduct(int id, ProductDTO productDto)
         {
-            if (id != product.Id)
+            if (id != productDto.Id)
             {
                 return BadRequest("ID sản phẩm không khớp.");
             }
@@ -49,17 +88,17 @@ namespace TranThienTrung2122110179.Controllers
                 return NotFound("Sản phẩm không tồn tại.");
             }
 
-            // Cập nhật thông tin sản phẩm
-            existingProduct.Name = product.Name;
-            existingProduct.Price = product.Price;
-            existingProduct.Stock = product.Stock;
-            existingProduct.Description = product.Description;
-            existingProduct.ImageUrl = product.ImageUrl;
-            existingProduct.CategoryId = product.CategoryId;  // Chỉ cập nhật CategoryId
-            existingProduct.Brand = product.Brand;
-            existingProduct.IsActive = product.IsActive;
-            existingProduct.UpdatedBy = product.UpdatedBy;
-            existingProduct.UpdatedAt = DateTime.Now;
+            // Cập nhật thông tin sản phẩm từ DTO
+            existingProduct.Name = productDto.Name;
+            existingProduct.Price = productDto.Price;
+            existingProduct.Stock = productDto.Stock;
+            existingProduct.Description = productDto.Description;
+            existingProduct.ImageUrl = productDto.ImageUrl;
+            existingProduct.CategoryId = productDto.CategoryId;
+            existingProduct.Brand = productDto.Brand;
+            existingProduct.IsActive = productDto.IsActive;
+            existingProduct.CreatedAt = DateTime.Now;
+            existingProduct.CreatedBy = productDto.CreatedBy;
 
             await _context.SaveChangesAsync();
 
@@ -84,7 +123,7 @@ namespace TranThienTrung2122110179.Controllers
 
         // Lấy thông tin sản phẩm theo ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
+        public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)
@@ -92,14 +131,52 @@ namespace TranThienTrung2122110179.Controllers
                 return NotFound("Sản phẩm không tồn tại.");
             }
 
-            return product;  // Trả về thông tin sản phẩm chỉ với CategoryId
+            // Chuyển đổi Entity sang DTO
+            var productDto = ConvertToDTO(product);
+            return Ok(productDto);  // Trả về ProductDTO
         }
 
         // Lấy danh sách tất cả sản phẩm
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts()
+        //{
+        //    var products = await _context.Products.ToListAsync();
+        //    var productDtos = products.Select(p => ConvertToDTO(p)).ToList();
+        //    return Ok(productDtos);  // Trả về danh sách ProductDTO
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            return await _context.Products.ToListAsync();  // Trả về tất cả sản phẩm mà không cần thông tin về Category
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                return BadRequest("Số trang và kích thước trang phải lớn hơn 0.");
+            }
+
+            var totalProducts = await _context.Products.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+
+            var products = await _context.Products
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var productDtos = products.Select(p => ConvertToDTO(p)).ToList();
+
+            var paginationMetadata = new
+            {
+                totalCount = totalProducts,
+                pageSize = pageSize,
+                currentPage = pageNumber,
+                totalPages = totalPages
+            };
+
+            Response.Headers.Add("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
+
+            return Ok(productDtos); // Trả về danh sách ProductDTO và thông tin phân trang trong Header
         }
+
     }
 }

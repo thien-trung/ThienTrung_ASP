@@ -1,90 +1,98 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TranThienTrung2122110179.Data;
-using TranThienTrung2122110179.Model;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using TranThienTrung2122110179.Data;
+    using TranThienTrung2122110179.DTO;
+    using TranThienTrung2122110179.Model;
 
-namespace TranThienTrung2122110179.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CategoryController : ControllerBase
+    namespace TranThienTrung2122110179.Controllers
     {
-        private readonly AppDbContext _context;
+    [Route("api/[controller]")]
+    [ApiController]   
+    //[Authorize]
 
-        public CategoryController(AppDbContext context)
+    public class CategoryController : ControllerBase
         {
-            _context = context;
-        }
+            private readonly AppDbContext _context;
 
-        // GET: api/Category
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
-        {
-            return await _context.Categories
-                .Include(c => c.Products)
-                .ToListAsync();
-        }
+            public CategoryController(AppDbContext context)
+            {
+                _context = context;
+            }
 
-        // GET: api/Category/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
-        {
-            var category = await _context.Categories
-                .Include(c => c.Products)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            // GET: api/Category
+            [HttpGet]
+            public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+            {
+                return await _context.Categories
+                    .Include(c => c.Products)
+                    .ToListAsync();
+            }
 
-            if (category == null)
-                return NotFound();
+            // GET: api/Category/5
+            [HttpGet("{id}")]
+            public async Task<ActionResult<Category>> GetCategory(int id)
+            {
+                var category = await _context.Categories
+                    .Include(c => c.Products)
+                    .FirstOrDefaultAsync(c => c.Id == id);
 
-            return category;
-        }
+                if (category == null)
+                    return NotFound();
 
-        // POST: api/Category
-        [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory(Category category)
-        {
-            category.CreatedAt = DateTime.Now;
-            // category.CreatedBy = "admin"; // Gán thủ công nếu chưa có hệ thống auth
+                return category;
+            }
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            // POST: api/Category
+            [HttpPost]
+            public async Task<ActionResult<Category>> CreateCategory(CategoryDto dto)
+            {
+                var category = new Category
+                {
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    CreatedBy = dto.CreatedBy,
+                    CreatedAt = DateTime.Now
+                };
 
-            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
-        }
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
 
-        // PUT: api/Category/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, Category updatedCategory)
-        {
-            if (id != updatedCategory.Id)
-                return BadRequest();
+                return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
+            }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-                return NotFound();
 
-            category.Name = updatedCategory.Name;
-            category.Description = updatedCategory.Description;
-            category.UpdatedBy = updatedCategory.UpdatedBy;
-            category.UpdatedAt = DateTime.Now;
+            // PUT: api/Category/5
+            [HttpPut("{id}")]
+            public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryDto dto)
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                    return NotFound();
 
-            await _context.SaveChangesAsync();
+                category.Name = dto.Name;
+                category.Description = dto.Description;
+                category.CreatedBy = dto.CreatedBy;
+                category.CreatedAt = DateTime.Now;
 
-            return NoContent();
-        }
+                await _context.SaveChangesAsync();
 
-        // DELETE: api/Category/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-                return NotFound();
+                return NoContent();
+            }
 
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
 
-            return NoContent();
+            // DELETE: api/Category/5
+            [HttpDelete("{id}")]
+            public async Task<IActionResult> DeleteCategory(int id)
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                    return NotFound();
+
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
         }
     }
-}

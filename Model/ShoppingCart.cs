@@ -1,43 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using TranThienTrung2122110179.Model;
 
-namespace TranThienTrung2122110179.Model
+public class ShoppingCart
 {
-    public class ShoppingCart
-    {
-        [Key]
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        public int UserId { get; set; }
+    [Required]
+    public int UserId { get; set; }
+    public User User { get; set; }  // Có thể loại bỏ trong quá trình gửi request nếu không cần.
 
-        [ForeignKey("UserId")]
-        public User User { get; set; }
+    [Required]
+    public int ProductId { get; set; }
+    public Product Product { get; set; }  // Có thể loại bỏ trong quá trình gửi request nếu không cần.
 
-        [Required]
-        public int ProductId { get; set; }
+    [Required]
+    public int Quantity { get; set; }
 
-        [ForeignKey("ProductId")]
-        public Product Product { get; set; }
+    [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal TotalPrice { get; set; }
 
-        [Required]
-        public int Quantity { get; set; }
+    public string CreatedBy { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalPrice { get; set; }
-        // Thông tin tạo
-        [MaxLength(255)]
-        public string CreatedBy { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        // Thông tin cập nhật
-        [MaxLength(255)]
-        public string UpdatedBy { get; set; }
-
-        public DateTime? UpdatedAt { get; set; }
-
-    }
 }
-
